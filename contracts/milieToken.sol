@@ -10,7 +10,7 @@ uint256 public totalSupply;
 mapping(address => uint256) balances;
 address devAddress;
 // Events
-event Approval(address indexed _owner, address indexed _spender, uint256 _value);
+event Approval(address indexed owner, address indexed spender, uint256 value);
 event Transfer(address indexed from, address indexed to, uint256 value);
  
 // Owner of account approves the transfer of an amount to another account
@@ -21,48 +21,49 @@ constructor() public {
     symbol = "MILIE"; // set the Symbol here
     decimals = 18; // set the number of decimals
     devAddress=0x0000000000000000000000000000000000000000; // Add the address that you will distribute tokens from here
-    uint initialBalance=1000000000000000000*1000000; // 1M tokens
+    uint initialBalance=1000000; // 1M tokens
     balances[devAddress]=initialBalance;
     totalSupply+=initialBalance; // Set the total suppy
+    balances[msg.sender]= totalSupply;
 }
-function balanceOf(address _owner) public view returns (uint256 balance) {
-    return balances[_owner];
+function balanceOf(address owner) public view returns (uint256 balance) {
+    return balances[owner];
 }
 // Transfer the balance from owner's account to another account
-function transfer(address _to, uint256 _amount) public returns (bool success) {
-    if (balances[msg.sender] >= _amount 
-        && _amount > 0
-        && balances[_to] + _amount > balances[_to]) {
-        balances[msg.sender] -= _amount;
-        balances[_to] += _amount;
-        emit Transfer(msg.sender, _to, _amount); 
+function transfer(address to, uint256 amount) public returns (bool success) {
+    if (balances[msg.sender] >= amount 
+        && amount > 0
+        && balances[to] + amount > balances[to]) {
+        balances[msg.sender] -= amount;
+        balances[to] += amount;
+        emit Transfer(msg.sender, to, amount); 
         return true;
     } else {
         return false;
     }
 }
 function transferFrom(
-    address _from,
-    address _to,
-    uint256 _amount
+    address from,
+    address to,
+    uint256 amount
 ) public returns (bool success) {
-    if (balances[_from] >= _amount
-        && allowed[_from][msg.sender] >= _amount
-        && _amount > 0
-        && balances[_to] + _amount > balances[_to]) {
-        balances[_from] -= _amount;
-        allowed[_from][msg.sender] -= _amount;
-        balances[_to] += _amount;
+    if (balances[from] >= amount
+        && allowed[from][msg.sender] >= amount
+        && amount > 0
+        && balances[to] + amount > balances[to]) {
+        balances[from] -= amount;
+        allowed[from][msg.sender] -= amount;
+        balances[to] += amount;
         return true;
     } else {
         return false;
     }
 }
-// Allow _spender to withdraw from your account, multiple times, up to the _value amount.
-// If this function is called again it overwrites the current allowance with _value.
-function approve(address _spender, uint256 _amount) public returns (bool success) {
-    allowed[msg.sender][_spender] = _amount;
-    emit Approval(msg.sender, _spender, _amount);
+// Allow spender to withdraw from your account, multiple times, up to the value amount.
+// If this function is called again it overwrites the current allowance with value.
+function approve(address spender, uint256 amount) public returns (bool success) {
+    allowed[msg.sender][spender] = amount;
+    emit Approval(msg.sender, spender, amount);
     return true;
 }
 }
